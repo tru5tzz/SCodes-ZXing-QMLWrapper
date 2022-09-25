@@ -1,5 +1,7 @@
 #include "SBarcodeScanner.h"
 
+#include <QtGlobal>
+
 SBarcodeScanner::SBarcodeScanner(QObject *parent)
     : QVideoSink(parent)
     ,	camera(nullptr) {
@@ -15,6 +17,9 @@ SBarcodeScanner::SBarcodeScanner(QObject *parent)
 
     //initCam();
     initPlayer();
+
+    qInfo() << "Output of MediaPlayer" << this->web_player->videoOutput()->objectName();
+
 }
 
 SBarcodeScanner::~SBarcodeScanner()
