@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/src"
+"isGitignoreExtActive": true,
+"cmake.sourceDirectory": "${workspaceFolder}/examples/QmlBarcodeReader",
 }

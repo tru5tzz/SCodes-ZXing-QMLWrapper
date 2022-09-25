@@ -74,5 +74,4 @@ build-*
 *.dll
 *.exe
 
-# VSCode config foler
-.vscode/
+/.vscode

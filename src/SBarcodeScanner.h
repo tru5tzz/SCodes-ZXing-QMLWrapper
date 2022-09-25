@@ -29,14 +29,17 @@ class SBarcodeScanner : public QVideoSink
     Q_PROPERTY(QRectF captureRect READ captureRect WRITE setCaptureRect NOTIFY captureRectChanged)
 
 public:
+    /* Constructors and Destructors*/
     explicit SBarcodeScanner(QObject *parent = nullptr);
     ~SBarcodeScanner() override;
 
+    /* Return pointer to the SBarcodeDecoder object */
     SBarcodeDecoder *getDecoder() ;
 
     /*!
      * \fn QVideoSink *videoSink() const
      * \brief Function for getting sink of video output
+     * Dung lam INVOKABLE, currently used as output to other object
      */
     QVideoSink *videoSink() const;
 
@@ -44,6 +47,7 @@ public:
      * \fn void setVideoSink(QVideoSink *videoSink)
      * \brief Function for setting sink of video output
      * \param const QVideoSink *videoSink - video sink
+     * Used as a INVOKABLE method, currently used as output to other object
      */
     void setVideoSink(QVideoSink *videoSink);
 
@@ -63,6 +67,7 @@ public:
     /*!
      * \fn QString captured() const
      * \brief Function for getting captured string
+     * Tra ve noi dung doan barcode/qrcode duoc quet
      */
     QString captured() const;
 
@@ -95,22 +100,19 @@ public slots:
 private:
     /*!
      * \brief Decoder instance
+     * Khoi tao luon object SBarcodeDecoder
      */
     SBarcodeDecoder m_decoder;
 
-    /*!
-     * \brief Camera instance
-     */
-    QCamera *camera;
-
     /*
      * Add QMediaPlayer as a alternative to QCamera
-     *
+     * Used as video source to feed the decoder
      */
     QMediaPlayer *web_player;
 
     /*!
      * \brief Pointer to a sink
+     * Point to video output object
      */
     QPointer<QVideoSink> m_videoSink;
 
@@ -120,17 +122,12 @@ private:
     QRectF m_captureRect;
 
     /*!
-     * \brief Captured string
+     * \brief Captured string. Chua noi dung ma barcode/qr
      */
     QString m_captured = "";
 
     /*!
-     * \brief Camera session instance
-     */
-    QMediaCaptureSession m_capture;
-
-    /*!
-     * \brief An instance of a thread
+     * \brief An instance of a thread. Dung de chay da luong, xu ly tung frame anh mot
      */
     QThread workerThread;
 
@@ -140,7 +137,8 @@ private:
     Worker *worker;
 
     /*!
-     * \brief Indicates the processing state
+     * \brief Indicates the processing state.
+     * Trang thai: 0 la pause processing/ 1 la continue processing
      */
     bool m_processing = true;
 
@@ -148,6 +146,7 @@ private:
      * \fn void setCaptured(const QString &captured)
      * \brief Function for setting capture string
      * \param const QString &captured - captured string
+     * Use to store noi dung cua ma qt/barcode vao trong bien private
      */
     void setCaptured(const QString &captured);
 
@@ -155,6 +154,7 @@ private:
      * \fn void handleFrameCaptured(const QVideoFrame &frame)
      * \brief Function for handling video frame
      * \param const QVideoFrame &frame - video frame
+     * Ham callback khi videoFrameChanged() signal xuat hien
      */
     void handleFrameCaptured(const QVideoFrame &frame);
 
@@ -165,7 +165,8 @@ signals:
     void cameraChanged();
 
     /*!
-     * \brief This signal emitted for running process in a thread
+     * \brief This signal emitted for running process in a thread.
+     * Goi worker de xu ly frame
      */
     void process(const QImage &image);
 
@@ -187,22 +188,14 @@ signals:
     void capturedChanged(const QString &captured);
 
 private slots:
-    /*!
-     * \fn void initCam()
-     * \brief Function for initialization of camera
-     */
-    void initCam();
-
-    /*!
-     * \fn void stopCam()
-     * \brief Function for stopping camera
-     */
-    void stopCam();
-
     /*
-     * Initialization media player
+     * Initialization video source
      */
     void initPlayer();
+
+    /*
+     * Turn off video source
+     */
 };
 
 /*!

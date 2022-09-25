@@ -3,8 +3,9 @@
 #include <QtGlobal>
 
 SBarcodeScanner::SBarcodeScanner(QObject *parent)
-    : QVideoSink(parent)
-    ,	camera(nullptr) {
+    : QVideoSink(parent) 
+    , web_player(nullptr) 
+{
 
     connect(&m_decoder, &SBarcodeDecoder::capturedChanged, this, &SBarcodeScanner::setCaptured);
     connect(this, &QVideoSink::videoFrameChanged, this, &SBarcodeScanner::handleFrameCaptured);
@@ -15,18 +16,7 @@ SBarcodeScanner::SBarcodeScanner(QObject *parent)
     connect(this, &SBarcodeScanner::process, worker, &Worker::process);
     workerThread.start();
 
-    //initCam();
     initPlayer();
-
-    qInfo() << "Output of MediaPlayer" << this->web_player->videoOutput()->objectName();
-
-}
-
-SBarcodeScanner::~SBarcodeScanner()
-{
-    workerThread.quit();
-    workerThread.wait();
-    stopCam();
 }
 
 SBarcodeDecoder *SBarcodeScanner::getDecoder()
@@ -34,39 +24,25 @@ SBarcodeDecoder *SBarcodeScanner::getDecoder()
     return &m_decoder;
 }
 
-void SBarcodeScanner::initCam() {
-    camera = new QCamera(this);
+void SBarcodeScanner::initPlayer() {
+    web_player = new QMediaPlayer(this);
 
-    const auto settings = camera->cameraDevice().videoFormats();
+    web_player->setSource(QUrl("http://192.168.1.101:8080/video"));
+    web_player->setVideoOutput(this);
+    qDebug() << "Name of the output object is " << web_player->videoOutput()->objectName();
 
-#ifdef Q_OS_ANDROID
-    int i = camera->cameraDevice().videoFormats().size() - 1;
-#else
-    int i = 0;
-#endif
-
-    const auto s = settings.at(i);
-
-    int w = settings.at(i).resolution().width();
-    int h = settings.at(i).resolution().height();
-    m_decoder.setResolution(w, h);
-
-    camera->setFocusMode(QCamera::FocusModeAuto);
-    camera->setCameraFormat(s);
-
-    m_capture.setCamera(camera);
-    m_capture.setVideoSink(this);
-
-    camera->start();
+    m_decoder.setResolution(this->videoSize().rwidth(), this->videoSize().rheight());
+    qDebug() << "Size of the video get from QMediaPlayer is W: " << 
+                this->videoSize().width() <<
+                " H: "  <<
+                this->videoSize().height();
+    web_player->play();
 }
 
-void SBarcodeScanner::stopCam()
+SBarcodeScanner::~SBarcodeScanner()
 {
-    camera->stop();
-    disconnect(camera, 0, 0, 0);
-    camera->setParent(nullptr);
-    delete camera;
-    camera = nullptr;
+    workerThread.quit();
+    workerThread.wait();
 }
 
 void SBarcodeScanner::handleFrameCaptured(const QVideoFrame &frame) {
@@ -137,14 +113,4 @@ void SBarcodeScanner::setVideoSink(QVideoSink *videoSink) {
 
     m_videoSink = videoSink;
     emit videoSinkChanged();
-}
-
-void SBarcodeScanner::initPlayer() {
-    web_player = new QMediaPlayer();
-
-    web_player->setSource(QUrl("http://192.168.1.101:8080/web"));
-    web_player->setVideoOutput((QVideoSink *) this);
-
-    web_player->play();
-
 }
