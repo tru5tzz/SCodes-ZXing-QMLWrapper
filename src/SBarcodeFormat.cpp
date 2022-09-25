@@ -23,9 +23,6 @@ const QMap<SCodes::SBarcodeFormat, ZXing::BarcodeFormat> k_formatsTranslations
     { SCodes::SBarcodeFormat::QRCode, ZXing::BarcodeFormat::QRCode },
     { SCodes::SBarcodeFormat::UPCA, ZXing::BarcodeFormat::UPCA },
     { SCodes::SBarcodeFormat::UPCE, ZXing::BarcodeFormat::UPCE },
-
-    { SCodes::SBarcodeFormat::OneDCodes, ZXing::BarcodeFormat::OneDCodes },
-    { SCodes::SBarcodeFormat::TwoDCodes, ZXing::BarcodeFormat::TwoDCodes },
     { SCodes::SBarcodeFormat::Any, ZXing::BarcodeFormat::Any },
 };
 }
@@ -37,7 +34,11 @@ ZXing::BarcodeFormat SCodes::toZXingFormat(SBarcodeFormat format)
 
 QString SCodes::toString(SBarcodeFormat format)
 {
-    return QString(ZXing::ToString(toZXingFormat(format)));
+    QString *converted;
+    /* TODO: fix qDebug
+    */
+    qDebug() << "SBarcodeFormat::SCodes::toString return: " << QString(stdStringtoQt(converted, ZXing::ToString(toZXingFormat(format))));
+    return QString(stdStringtoQt(converted, ZXing::ToString(toZXingFormat(format))));
 }
 
 SCodes::SBarcodeFormat SCodes::fromString(const QString &formatName)
@@ -78,4 +79,20 @@ ZXing::BarcodeFormats SCodes::toZXingFormat(SBarcodeFormats formats)
     }
 
     return zXingformats;
+}
+
+QString SCodes::stdStringtoQt(QString *buffer, std::string str) {
+    int length = str.length();
+    buffer = new QString();
+    QString result;
+
+    for (int i = 0; i < length; i++) {
+        buffer->append(str[i]);
+        result.append(str[i]);
+    }
+
+    /* TODO: fix qDebug
+    */
+    qDebug() << "SBarcodeFormat::SCodes::stdStringtoQt returns: " << result;
+    return result;
 }

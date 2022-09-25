@@ -27,7 +27,7 @@ bool SBarcodeGenerator::generate(const QString &inputString)
         } else {
             ZXing::MultiFormatWriter writer = ZXing::MultiFormatWriter(SCodes::toZXingFormat(m_format)).setMargin(
                 m_margin).setEccLevel(m_eccLevel);
-
+            // TODO: FromUtf8 is deprecated, need to change
             _bitmap =
               ZXing::ToMatrix<uint8_t>(writer.encode(ZXing::TextUtfEncoding::FromUtf8(inputString.toStdString()),
                 m_width, m_height));

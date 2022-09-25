@@ -68,6 +68,13 @@ QString toString(SBarcodeFormat format);
  * \param const QString &formatName - barcode format string.
  */
 SBarcodeFormat fromString(const QString &formatName);
+
+/*!
+ * \fn QString stdStringtoQt(string str)
+ * \brief Turn std::string into QString as the new commits of zxing-cpp needed
+ * \param const std::string str. String
+ */
+QString stdStringtoQt(QString *buffer, std::string str);
 }
 
 #endif // SBARCODEFORMAT_H

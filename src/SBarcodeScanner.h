@@ -158,6 +158,10 @@ private:
      */
     void handleFrameCaptured(const QVideoFrame &frame);
 
+    void mediaPlayerErrorHandle(QMediaPlayer::Error error, const QString &errorString);
+
+    void mediaPlayerStatusHandle(QMediaPlayer::MediaStatus status);
+
 signals:
     /*!
      * \brief This signal emitted when camera changed

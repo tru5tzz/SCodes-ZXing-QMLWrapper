@@ -36,6 +36,10 @@ void SBarcodeScanner::initPlayer() {
                 this->videoSize().width() <<
                 " H: "  <<
                 this->videoSize().height();
+
+    connect(web_player, &QMediaPlayer::errorOccurred, this, &SBarcodeScanner::mediaPlayerErrorHandle);
+    connect(web_player, &QMediaPlayer::mediaStatusChanged, this, &SBarcodeScanner::mediaPlayerStatusHandle);
+    
     web_player->play();
 }
 
@@ -46,6 +50,7 @@ SBarcodeScanner::~SBarcodeScanner()
 }
 
 void SBarcodeScanner::handleFrameCaptured(const QVideoFrame &frame) {
+    //qDebug() << "Frame Changed";
     if(m_processing) {
         emit process(m_decoder.videoFrameToImage(frame, captureRect().toRect()));
 
@@ -114,3 +119,12 @@ void SBarcodeScanner::setVideoSink(QVideoSink *videoSink) {
     m_videoSink = videoSink;
     emit videoSinkChanged();
 }
+
+void SBarcodeScanner::mediaPlayerErrorHandle(QMediaPlayer::Error error, const QString &errorString) {
+    qDebug() << "Media Player Error changed into: " << errorString;
+}
+
+void SBarcodeScanner::mediaPlayerStatusHandle(QMediaPlayer::MediaStatus status) {
+    qDebug() << "Media Player Status changed into: " << status;
+}
+
