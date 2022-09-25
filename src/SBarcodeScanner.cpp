@@ -13,7 +13,8 @@ SBarcodeScanner::SBarcodeScanner(QObject *parent)
     connect(this, &SBarcodeScanner::process, worker, &Worker::process);
     workerThread.start();
 
-    initCam();
+    //initCam();
+    initPlayer();
 }
 
 SBarcodeScanner::~SBarcodeScanner()
@@ -131,4 +132,14 @@ void SBarcodeScanner::setVideoSink(QVideoSink *videoSink) {
 
     m_videoSink = videoSink;
     emit videoSinkChanged();
+}
+
+void SBarcodeScanner::initPlayer() {
+    web_player = new QMediaPlayer();
+
+    web_player->setSource(QUrl("http://192.168.1.101:8080/web"));
+    web_player->setVideoOutput((QVideoSink *) this);
+
+    web_player->play();
+
 }

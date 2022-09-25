@@ -27,7 +27,6 @@ ApplicationWindow {
       barcodeScanner.setProcessing(0)
     }
   }
-
   VideoOutput {
     id: videoOutput
 

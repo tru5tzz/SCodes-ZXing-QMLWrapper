@@ -12,6 +12,7 @@
 #include <QQmlContext>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
+#include <QMediaPlayer>
 
 #include "SBarcodeDecoder.h"
 
@@ -102,6 +103,12 @@ private:
      */
     QCamera *camera;
 
+    /*
+     * Add QMediaPlayer as a alternative to QCamera
+     *
+     */
+    QMediaPlayer *web_player;
+
     /*!
      * \brief Pointer to a sink
      */
@@ -191,6 +198,11 @@ private slots:
      * \brief Function for stopping camera
      */
     void stopCam();
+
+    /*
+     * Initialization media player
+     */
+    void initPlayer();
 };
 
 /*!
