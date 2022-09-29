@@ -16,7 +16,11 @@ SBarcodeScanner::SBarcodeScanner(QObject *parent)
     connect(this, &SBarcodeScanner::process, worker, &Worker::process);
     workerThread.start();
 
-    initPlayer();
+    initPlayer(m_ipAddress);
+
+    connect(web_player, &QMediaPlayer::errorOccurred, this, &SBarcodeScanner::mediaPlayerErrorHandle);
+    connect(web_player, &QMediaPlayer::mediaStatusChanged, this, &SBarcodeScanner::mediaPlayerStatusHandle);
+    connect(this, &SBarcodeScanner::ipAddressChanged, this, &SBarcodeScanner::initPlayer);
 }
 
 SBarcodeDecoder *SBarcodeScanner::getDecoder()
@@ -24,23 +28,24 @@ SBarcodeDecoder *SBarcodeScanner::getDecoder()
     return &m_decoder;
 }
 
-void SBarcodeScanner::initPlayer() {
+void SBarcodeScanner::initPlayer(const QString &ip_address) {
     web_player = new QMediaPlayer(this);
 
-    web_player->setSource(QUrl("http://192.168.1.101:8080/video"));
-    web_player->setVideoOutput(this);
-    qDebug() << "Name of the output object is " << web_player->videoOutput()->objectName();
-
-    m_decoder.setResolution(this->videoSize().rwidth(), this->videoSize().rheight());
-    qDebug() << "Size of the video get from QMediaPlayer is W: " << 
-                this->videoSize().width() <<
-                " H: "  <<
-                this->videoSize().height();
-
-    connect(web_player, &QMediaPlayer::errorOccurred, this, &SBarcodeScanner::mediaPlayerErrorHandle);
-    connect(web_player, &QMediaPlayer::mediaStatusChanged, this, &SBarcodeScanner::mediaPlayerStatusHandle);
+    QString *prefix, *suffix, *url = new QString();
+    prefix = new QString("http://");
+    suffix = new QString(":8080/video");
     
+    url->append(*prefix);
+    url->append(ip_address);
+    url->append(*suffix);
+
+    qDebug() << "Cam ip address" << *url;
+
+    web_player->setSource(QUrl(*url));
+    web_player->setVideoOutput(this);
+
     web_player->play();
+  
 }
 
 SBarcodeScanner::~SBarcodeScanner()
@@ -126,5 +131,29 @@ void SBarcodeScanner::mediaPlayerErrorHandle(QMediaPlayer::Error error, const QS
 
 void SBarcodeScanner::mediaPlayerStatusHandle(QMediaPlayer::MediaStatus status) {
     qDebug() << "Media Player Status changed into: " << status;
+
+    if (status == QMediaPlayer::LoadedMedia) {
+        m_decoder.setResolution(this->videoSize().rwidth(), this->videoSize().rheight());
+
+    }
+}
+
+QString SBarcodeScanner::ipAddress() const {
+    return m_ipAddress;
+}
+
+
+
+void SBarcodeScanner::setIpAddress(QString ip) {
+    qDebug() << "Came to this method\nInput ip: " << ip << "\nAnd current ip: " << m_ipAddress;
+    if (ip == m_ipAddress) {
+        qDebug() << "Is equal?";
+        return;
+    }
+
+    m_ipAddress = ip;
+    qDebug() << "After assign: " << m_ipAddress;
+
+    emit ipAddressChanged(m_ipAddress);
 }
 

@@ -27,6 +27,7 @@ class SBarcodeScanner : public QVideoSink
 
     Q_PROPERTY(QVideoSink* videoSink READ videoSink WRITE setVideoSink NOTIFY videoSinkChanged)
     Q_PROPERTY(QRectF captureRect READ captureRect WRITE setCaptureRect NOTIFY captureRectChanged)
+    Q_PROPERTY(QString ipAddress READ ipAddress WRITE setIpAddress NOTIFY ipAddressChanged)
 
 public:
     /* Constructors and Destructors*/
@@ -71,6 +72,10 @@ public:
      */
     QString captured() const;
 
+    QString ipAddress() const;
+
+    void setIpAddress(QString ip);
+
 public slots:
     /*!
      * \fn void pauseProcessing()
@@ -109,6 +114,8 @@ private:
      * Used as video source to feed the decoder
      */
     QMediaPlayer *web_player;
+
+    QString m_ipAddress;
 
     /*!
      * \brief Pointer to a sink
@@ -191,11 +198,13 @@ signals:
      */
     void capturedChanged(const QString &captured);
 
+    void ipAddressChanged(const QString &ip);
+
 private slots:
     /*
      * Initialization video source
      */
-    void initPlayer();
+    void initPlayer(const QString &ip_address);
 
     /*
      * Turn off video source

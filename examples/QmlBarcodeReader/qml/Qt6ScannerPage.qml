@@ -21,6 +21,8 @@ ApplicationWindow {
 
     captureRect: Qt.rect(root.width / 4, root.height / 4, root.width / 2, root.height / 2)
 
+    ipAddress: "192.168.1.101"
+
     onCapturedChanged: function (captured) {
       scanResultText.text = captured
       resultScreen.visible = true
